@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title id="page-title">Otobet</title>
+  <meta name="description" id="meta-desc" content="">
+  <meta name="keywords" id="meta-keys" content="">
+  <meta name="robots" id="meta-robots" content="index, follow">
+  <meta name="author" id="meta-author" content="Otobet">
+  <link rel="canonical" id="canonical" href="">
+  <!-- Open Graph -->
+  <meta property="og:title" id="og-title" content="">
+  <meta property="og:description" id="og-desc" content="">
+  <meta property="og:image" id="og-image" content="">
+  <meta property="og:type" content="article">
+  <meta property="og:url" id="og-url" content="">
+  <meta property="og:locale" content="tr_TR">
+  <meta property="og:site_name" content="Otobet">
+  <meta property="article:published_time" id="article-pub" content="">
+  <meta property="article:modified_time" id="article-mod" content="">
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" id="tw-title" content="">
+  <meta name="twitter:description" id="tw-desc" content="">
+  <meta name="twitter:image" id="tw-image" content="">
+  <!-- Schema.org BlogPosting -->
+  <script type="application/ld+json" id="schema-post">{}</script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header class="header">
+    <div class="wrap">
+      <a href="/"><img src="uploads/logo.svg" alt="Otobet" class="logo"></a>
+      <nav class="nav">
+        <a href="/">Ana Sayfa</a>
+        <a href="blog.html">Blog</a>
+        <a href="giris.html">Otobet Giris</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb" id="breadcrumb">
+    <div class="wrap">
+      <a href="/">Ana Sayfa</a> <span>/</span> <a href="blog.html">Blog</a> <span>/</span> <span id="bc-title"></span>
+    </div>
+  </nav>
+
+  <div class="post-header">
+    <h1 id="post-title"></h1>
+    <div class="post-meta">
+      <span id="post-date"></span> · <span id="post-cat"></span>
+      <span id="post-read-time"></span>
+      <span id="post-author-name"></span>
+    </div>
+  </div>
+
+  <div class="post-featured" id="post-img-wrap" style="display:none">
+    <img id="post-img" src="" alt="">
+  </div>
+
+  <article class="post-content" id="post-content"></article>
+
+  <footer class="footer" id="footer">
+    <p>&copy; 2025 Otobet. Tum haklari saklidir.</p>
+  </footer>
+
+  <script src="js/app.js"></script>
+  <script>
+    const slug = new URLSearchParams(location.search).get('s');
+    if (slug) {
+      const baseUrl = location.origin;
+      fetch('api/posts.php?slug=' + slug)
+        .then(r => r.json())
+        .then(post => {
+          if (post.error) { location.href = '/'; return; }
+          const title = post.seo_title || post.title;
+          const desc = post.seo_description || post.excerpt || '';
+          const url = baseUrl + '/yazilar/' + post.slug;
+          const img = post.featured_image ? baseUrl + '/' + post.featured_image : '';
+          const author = post.author || 'Otobet';
+
+          // Okuma suresi
+          const words = post.content.replace(/<[^>]*>/g, '').split(/\s+/).length;
+          const readTime = Math.max(1, Math.ceil(words / 200));
+
+          // Sayfa icerigi
+          document.getElementById('post-title').textContent = post.title;
+          document.getElementById('post-date').textContent = new Date(post.created_at).toLocaleDateString('tr-TR');
+          document.getElementById('post-cat').textContent = post.category || 'Genel';
+          document.getElementById('post-read-time').textContent = ' · ' + readTime + ' dk okuma';
+          document.getElementById('post-author-name').textContent = ' · ' + author;
+          document.getElementById('post-content').innerHTML = post.content;
+          document.getElementById('bc-title').textContent = post.title;
+
+          // Meta tags
+          document.getElementById('page-title').textContent = title + ' - Otobet';
+          setMeta('meta-desc', desc);
+          setMeta('meta-keys', post.seo_keywords || '');
+          setMeta('meta-author', author);
+          if (post.robots_meta) setMeta('meta-robots', post.robots_meta);
+          document.getElementById('canonical').setAttribute('href', url);
+
+          // OG
+          setMeta('og-title', title);
+          setMeta('og-desc', desc);
+          setMeta('og-url', url);
+          if (img) setMeta('og-image', img);
+          setMeta('article-pub', post.created_at);
+          setMeta('article-mod', post.updated_at);
+
+          // Twitter
+          setMeta('tw-title', title);
+          setMeta('tw-desc', desc);
+          if (img) setMeta('tw-image', img);
+
+          // Featured image
+          if (post.featured_image) {
+            document.getElementById('post-img').src = post.featured_image;
+            document.getElementById('post-img').alt = post.title;
+            document.getElementById('post-img-wrap').style.display = 'block';
+          }
+
+          // Schema.org BlogPosting + BreadcrumbList
+          document.getElementById('schema-post').textContent = JSON.stringify({
+            "@context": "https://schema.org",
+            "@graph": [
+              {
+                "@type": "BlogPosting",
+                "headline": post.title,
+                "description": desc,
+                "url": url,
+                "datePublished": post.created_at,
+                "dateModified": post.updated_at,
+                "author": {"@type": "Person", "name": author},
+                "publisher": {"@type": "Organization", "name": "Otobet", "logo": {"@type": "ImageObject", "url": baseUrl + "/uploads/logo.svg"}},
+                "image": img || undefined,
+                "mainEntityOfPage": {"@type": "WebPage", "@id": url},
+                "wordCount": words,
+                "timeRequired": "PT" + readTime + "M"
+              },
+              {
+                "@type": "BreadcrumbList",
+                "itemListElement": [
+                  {"@type": "ListItem", "position": 1, "name": "Ana Sayfa", "item": baseUrl + "/"},
+                  {"@type": "ListItem", "position": 2, "name": "Blog", "item": baseUrl + "/#blog"},
+                  {"@type": "ListItem", "position": 3, "name": post.title, "item": url}
+                ]
+              }
+            ]
+          });
+        });
+    }
+  </script>
+</body>
+</html>

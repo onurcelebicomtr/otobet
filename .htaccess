@@ -1,0 +1,85 @@
+RewriteEngine On
+
+# HTTPS yönlendirme
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Sitemap clean URL
+RewriteRule ^sitemap\.xml$ api/sitemap.php [L]
+
+# Blog post clean URLs
+RewriteRule ^yazilar/([a-z0-9-]+)/?$ post.html?s=$1 [L,QSA]
+
+# Hassas dosya/klasör erişimini engelle
+RewriteRule ^data/ - [F,L]
+RewriteRule ^api/config\.php - [F,L]
+RewriteRule ^\. - [F,L]
+RewriteRule ^.*\.json$ - [F,L]
+
+# uploads klasöründe PHP çalıştırmayı engelle
+<IfModule mod_rewrite.c>
+  RewriteRule ^uploads/.*\.php$ - [F,L]
+</IfModule>
+
+# Dizin listelemeyi kapat
+Options -Indexes
+
+# Güvenlik headerları
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set X-XSS-Protection "1; mode=block"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; frame-ancestors 'none'"
+  Header always unset X-Powered-By
+  Header always unset Server
+</IfModule>
+
+# PHP sürüm bilgisini gizle
+<IfModule mod_php.c>
+  php_flag expose_php Off
+  php_flag display_errors Off
+  php_flag log_errors On
+  php_value max_file_uploads 5
+  php_value upload_max_filesize 5M
+  php_value post_max_size 6M
+  php_value max_input_vars 500
+  php_value session.cookie_httponly 1
+  php_value session.cookie_secure 1
+  php_value session.use_strict_mode 1
+</IfModule>
+
+# Hassas dosya türlerine erişimi engelle
+<FilesMatch "\.(json|lock|log|sh|sql|bak|tmp|env)$">
+  Require all denied
+</FilesMatch>
+
+# Gizli dosyaları engelle (.git, .env, .htpasswd vs.)
+<FilesMatch "^\.">
+  Require all denied
+</FilesMatch>
+
+# Cache static assets
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/jpeg "access plus 1 month"
+  ExpiresByType image/png "access plus 1 month"
+  ExpiresByType image/webp "access plus 1 month"
+  ExpiresByType image/gif "access plus 1 month"
+  ExpiresByType text/css "access plus 1 week"
+  ExpiresByType application/javascript "access plus 1 week"
+</IfModule>
+
+# Gzip sıkıştırma
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json image/svg+xml
+</IfModule>
+
+# Hotlink koruması (görsellerin başka sitelerden çekilmesini engelle)
+<IfModule mod_rewrite.c>
+  RewriteCond %{HTTP_REFERER} !^$
+  RewriteCond %{HTTP_REFERER} !^https?://(www\.)?%{HTTP_HOST} [NC]
+  RewriteRule \.(jpg|jpeg|png|gif|webp)$ - [F,L]
+</IfModule>

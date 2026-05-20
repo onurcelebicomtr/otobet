@@ -1,0 +1,8 @@
+uploads/*
+!uploads/.gitkeep
+!uploads/logo.png
+!uploads/logo.svg
+!uploads/.htaccess
+data/posts.json
+.DS_Store
+.vercel

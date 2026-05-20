@@ -1,0 +1,9 @@
+# uploads klasöründe PHP/script çalıştırmayı tamamen engelle
+php_flag engine off
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteRule \.php$ - [F,L]
+</IfModule>
+AddHandler default-handler .php .php5 .php7 .phtml .pht .shtml
+RemoveHandler .php .php5 .php7 .phtml .pht
+Options -ExecCGI
