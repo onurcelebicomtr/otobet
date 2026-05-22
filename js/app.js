@@ -13,7 +13,7 @@ function loadSettings() {
       const title = s.site_name || 'Otobet';
       const desc = s.site_description || '';
       const keys = s.site_keywords || '';
-      const ogImg = s.og_image || baseUrl + '/uploads/logo.svg';
+      const ogImg = s.og_image || baseUrl + '/uploads/logo.png';
 
       // Title & meta
       const t = document.getElementById('page-title');
@@ -43,7 +43,7 @@ function loadSettings() {
           "@type": "Organization",
           "name": title,
           "url": baseUrl,
-          "logo": baseUrl + '/uploads/logo.svg'
+          "logo": baseUrl + '/uploads/logo.png'
         });
       }
 
