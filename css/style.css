@@ -28,7 +28,7 @@ img{max-width:100%;height:auto;display:block}
 
 /* HERO */
 .hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-light) 100%);padding:32px 20px 24px;text-align:center}
-.hero h1{font-family:var(--font-heading);color:var(--white);font-size:clamp(24px,4vw,40px);font-weight:700;margin-bottom:8px;line-height:1.2;text-transform:uppercase;letter-spacing:1px}
+.hero #hero-title{font-family:var(--font-heading);color:var(--white);font-size:clamp(24px,4vw,40px);font-weight:700;margin-bottom:8px;line-height:1.2;text-transform:uppercase;letter-spacing:1px}
 .hero p{color:rgba(255,255,255,0.7);font-size:clamp(14px,2vw,17px);max-width:560px;margin:0 auto}
 .hero-accent{color:var(--green)}
 
