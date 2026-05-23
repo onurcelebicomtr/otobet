@@ -115,7 +115,7 @@ function loadSingleContent(pageType, containerId) {
       container.innerHTML = `
         <article>
           ${p.featured_image ? `<img style="width:100%;border-radius:12px;margin-bottom:24px;max-height:400px;object-fit:cover" src="${p.featured_image}" alt="${p.title}" loading="lazy">` : ''}
-          <h2 style="font-family:var(--font-heading);font-size:26px;font-weight:700;color:var(--navy);margin-bottom:16px">${p.title}</h2>
+          <p style="font-family:var(--font-heading);font-size:26px;font-weight:700;color:var(--navy);margin-bottom:16px">${p.title}</p>
           <div style="font-size:17px;line-height:1.9;color:var(--text)">${p.content}</div>
         </article>
       `;
